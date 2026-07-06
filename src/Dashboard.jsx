@@ -69,7 +69,7 @@ const products = [
     fullDesc: 'Our physical branch in Sita Road — where the whole ecosystem started, one classroom before it became six products. We teach Science, Physics, Chemistry, English, Computer, Programming, AI, and Test Preparation.',
     status: 'Live',
     categories: ['Education'],
-    url: 'https://ccc.damsaz.site',
+    url: '#',
     comingSoon: false,
     stats: { location: 'Sita Road • One Branch' },
     icon: <Users size={32} />,
