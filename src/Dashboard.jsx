@@ -15,10 +15,10 @@ const products = [
     title: 'Mind Forge',
     desc: 'Advanced MCQ testing and assessment platform for teachers and students.',
     fullDesc: 'An MCQ practice platform that forges sharper minds one question at a time — built for students who want real exam pressure and teachers who want instant analytics.',
-    status: 'Soon',
+    status: 'Live',
     categories: ['Education'],
-    url: '#',
-    comingSoon: true,
+    url: 'https://mindforge.damsaz.site/',
+    comingSoon: false,
     stats: { audience: 'For Students & Teachers' },
     icon: <BookOpen size={32} />,
     color: 'from-blue-400 to-indigo-500'
@@ -57,7 +57,7 @@ const products = [
     status: 'Soon',
     categories: ['Education'],
     url: '#',
-    comingSoon: false,
+    comingSoon: true,
     stats: { audience: 'For Kids & Toddlers' },
     icon: <User size={32} />,
     color: 'from-pink-400 to-rose-500'
