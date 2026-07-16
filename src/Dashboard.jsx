@@ -257,8 +257,19 @@ export default function DamsazDashboard() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [presenterMode, setPresenterMode] = useState(false);
   const [taglineIndex, setTaglineIndex] = useState(0);
-  const [stars, setStars] = useState([]);
-  
+
+  const [stars] = useState(() =>
+  Array.from({ length: 150 }).map((_, i) => ({
+    id: i,
+    size: Math.random() * 3 + 1,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    animationDelay: `${Math.random() * 5}s`,
+    animationDuration: `${3 + Math.random() * 4}s`,
+    opacity: Math.random() * 0.7 + 0.3,
+  }))
+);
+
   // --- Toast notification state ---
   const [toast, setToast] = useState({ visible: false, message: '' });
   
@@ -280,27 +291,6 @@ export default function DamsazDashboard() {
     toastTimeoutRef.current = setTimeout(() => {
       setToast({ visible: false, message: '' });
     }, 3500);
-  }, []);
-
-  // --- GENERATE STARS ONCE AFTER MOUNT ---
-  useEffect(() => {
-    const generated = Array.from({ length: 150 }).map((_, i) => ({
-      id: i,
-      size: Math.random() * 3 + 1,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 5}s`,
-      animationDuration: `${3 + Math.random() * 4}s`,
-      opacity: Math.random() * 0.7 + 0.3,
-    }));
-    setStars(generated);
-    
-    // Cleanup toast timeout on unmount
-    return () => {
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
-      }
-    };
   }, []);
 
   // --- THEME PERSISTENCE ---
@@ -405,6 +395,16 @@ export default function DamsazDashboard() {
     };
   }, []);
 
+  // Cleanup toast timeout on unmount
+useEffect(() => {
+  return () => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+  };
+}, []);
+
+
   // Dynamic update date
   const updateDate = new Date().toLocaleDateString('en-US', {
     month: 'short',
@@ -455,7 +455,7 @@ export default function DamsazDashboard() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[999] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 shadow-2xl max-w-md w-[90%] text-center"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-999 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 shadow-2xl max-w-md w-[90%] text-center"
           >
             <p className="text-white font-medium text-sm">{toast.message}</p>
           </motion.div>
