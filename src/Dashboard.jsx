@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import Tilt from 'react-parallax-tilt';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { 
-  Search, Monitor, User, Users, 
+import {
+  Search, Monitor, User, Users,
   PlayCircle, Building, BookOpen, Fingerprint,
   Sun, Moon, ChevronDown, ArrowRight, X, Sparkles,
   Youtube, Facebook, Instagram
@@ -119,25 +119,41 @@ const getInitialTheme = () => {
   return saved === 'light' || saved === 'dark' ? saved : 'dark';
 };
 
-// --- SUBCOMPONENT: PRODUCT CARD ---
-const ProductCard = ({ product, isExpanded, onToggle, theme, presenterMode, showToast }) => {
+// --- Optimized Star Component (memoized) ---
+const Star = memo(({ id, size, left, top, animationDelay, animationDuration, opacity, theme }) => (
+  <div
+    className={`absolute rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-slate-800'}`}
+    style={{
+      width: size,
+      height: size,
+      left,
+      top,
+      opacity,
+      animation: `twinkle ${animationDuration} infinite`,
+      animationDelay
+    }}
+  />
+));
+
+// --- Memoized Product Card ---
+const ProductCard = memo(({ product, isExpanded, onToggle, theme, presenterMode, showToast }) => {
   const reducedMotion = useReducedMotion();
-  
-  const handleKeyDown = (e) => {
+
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onToggle(product.id);
     }
-  };
+  }, [onToggle, product.id]);
 
-  const handleVisit = (e) => {
+  const handleVisit = useCallback((e) => {
     e.stopPropagation();
     if (product.comingSoon) {
       showToast(`🚀 ${product.title} is coming soon! Stay tuned.`);
     } else {
       window.open(product.url, '_blank', 'noopener,noreferrer');
     }
-  };
+  }, [product, showToast]);
 
   return (
     <motion.div
@@ -146,14 +162,14 @@ const ProductCard = ({ product, isExpanded, onToggle, theme, presenterMode, show
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.15 }}
       className={isExpanded ? 'col-span-full' : ''}
     >
       <Tilt
         tiltMaxAngleX={presenterMode ? 0 : 5}
         tiltMaxAngleY={presenterMode ? 0 : 5}
         glareEnable={!presenterMode && !reducedMotion}
-        glareMaxOpacity={0.15}
+        glareMaxOpacity={0.1}
         glarePosition="all"
         className="h-full"
       >
@@ -162,15 +178,15 @@ const ProductCard = ({ product, isExpanded, onToggle, theme, presenterMode, show
           tabIndex={0}
           onClick={() => onToggle(product.id)}
           onKeyDown={handleKeyDown}
-          className={`h-full relative group cursor-pointer rounded-2xl p-6 transition-all duration-300 ${
-            theme === 'dark' 
+          className={`h-full relative group cursor-pointer rounded-2xl p-6 transition-all duration-200 ${
+            theme === 'dark'
               ? `bg-white/5 border-white/10 ${isExpanded ? 'bg-white/10 border-indigo-500/30' : 'hover:bg-white/10'}`
               : `bg-white/60 border-white/40 ${isExpanded ? 'bg-white/80 border-indigo-400/50 shadow-lg' : 'hover:bg-white/80 hover:shadow-lg'}`
-          } border hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.3)] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none`}
+          } border hover:shadow-[0_15px_30px_-10px_rgba(99,102,241,0.3)] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none`}
         >
           {/* Status Badge */}
           <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold tracking-wider ${
-            product.status === 'Live' 
+            product.status === 'Live'
               ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
               : product.status === 'Beta'
               ? theme === 'dark' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-100 text-amber-700'
@@ -196,8 +212,8 @@ const ProductCard = ({ product, isExpanded, onToggle, theme, presenterMode, show
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
               {Object.entries(product.stats).map(([key, value]) => (
                 <span key={key} className={`px-2 py-1 rounded-full ${
-                  theme === 'dark' 
-                    ? 'bg-white/5 text-white/40' 
+                  theme === 'dark'
+                    ? 'bg-white/5 text-white/40'
                     : 'bg-slate-100 text-slate-600'
                 }`}>
                   {value}
@@ -214,41 +230,47 @@ const ProductCard = ({ product, isExpanded, onToggle, theme, presenterMode, show
             <ChevronDown size={14} className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
           </div>
 
-          {/* Expanded extra content */}
-          <AnimatePresence>
-            {isExpanded && (
+          {/* Expanded extra content – using maxHeight animation */}
+          {isExpanded && (
+            <div className="overflow-hidden">
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
+                initial={{ maxHeight: 0, opacity: 0 }}
+                animate={{ maxHeight: 300, opacity: 1 }}
+                exit={{ maxHeight: 0, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="mt-4 pt-4 border-t border-white/10"
               >
-                <div className={`mt-4 pt-4 border-t ${theme === 'dark' ? 'border-white/10' : 'border-slate-200'}`}>
-                  <button
-                    onClick={handleVisit}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      product.comingSoon
-                        ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                        : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
-                    }`}
-                  >
-                    {product.comingSoon ? 'Coming Soon 🚀' : `Visit ${product.title}`}
-                    <ArrowRight size={14} />
-                  </button>
-                </div>
+                <button
+                  onClick={handleVisit}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    product.comingSoon
+                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
+                  }`}
+                >
+                  {product.comingSoon ? 'Coming Soon 🚀' : `Visit ${product.title}`}
+                  <ArrowRight size={14} />
+                </button>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          )}
         </div>
       </Tilt>
     </motion.div>
   );
-};
+}, (prev, next) => {
+  return (
+    prev.product.id === next.product.id &&
+    prev.isExpanded === next.isExpanded &&
+    prev.theme === next.theme &&
+    prev.presenterMode === next.presenterMode
+  );
+});
 
 // --- MAIN DASHBOARD COMPONENT ---
 export default function DamsazDashboard() {
   const reducedMotion = useReducedMotion();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const [expandedId, setExpandedId] = useState(null);
@@ -257,49 +279,52 @@ export default function DamsazDashboard() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [presenterMode, setPresenterMode] = useState(false);
   const [taglineIndex, setTaglineIndex] = useState(0);
-
-  const [stars] = useState(() =>
-  Array.from({ length: 150 }).map((_, i) => ({
-    id: i,
-    size: Math.random() * 3 + 1,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    animationDelay: `${Math.random() * 5}s`,
-    animationDuration: `${3 + Math.random() * 4}s`,
-    opacity: Math.random() * 0.7 + 0.3,
-  }))
-);
-
-  // --- Toast notification state ---
   const [toast, setToast] = useState({ visible: false, message: '' });
-  
+
   const containerRef = useRef(null);
   const gridRef = useRef(null);
   const rafId = useRef(null);
   const toastTimeoutRef = useRef(null);
+  const debounceRef = useRef(null);
 
-  // --- Show toast notification (replaces alert) ---
+  // Generate stars once (reduced count & size)
+  const [stars] = useState(() =>
+    Array.from({ length: 80 }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 2 + 1,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 4}s`,
+      animationDuration: `${3 + Math.random() * 2}s`,
+      opacity: Math.random() * 0.5 + 0.3,
+    }))
+  );
+
+  // Debounced search handler
+  const handleSearchChange = useCallback((e) => {
+    const value = e.target.value;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchQuery(value);
+    }, 120);
+  }, []);
+
+  // Show toast notification
   const showToast = useCallback((message) => {
-    // Clear any existing timeout
-    if (toastTimeoutRef.current) {
-      clearTimeout(toastTimeoutRef.current);
-    }
-    
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setToast({ visible: true, message });
-    
-    // Auto-hide after 3.5 seconds
     toastTimeoutRef.current = setTimeout(() => {
       setToast({ visible: false, message: '' });
     }, 3500);
   }, []);
 
-  // --- THEME PERSISTENCE ---
+  // Theme persistence
   useEffect(() => {
     localStorage.setItem('damsaz-theme', theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
-  // --- TYPEWRITER EFFECT ---
+  // Typewriter effect
   useEffect(() => {
     const interval = setInterval(() => {
       setTaglineIndex((prev) => (prev + 1) % taglines.length);
@@ -307,61 +332,7 @@ export default function DamsazDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- COMPUTED VALUES ---
-  const coreProducts = useMemo(() => products.filter(p => p.id !== 'about'), []);
-  const total = coreProducts.length;
-  const liveCount = coreProducts.filter(p => p.status === 'Live').length;
-  const betaCount = coreProducts.filter(p => p.status === 'Beta').length;
-  const soonCount = coreProducts.filter(p => p.status === 'Soon').length;
-
-  const filtered = useMemo(() => {
-    return products.filter(p => {
-      const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.fullDesc.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchCategory = activeFilter === 'All' || p.categories.includes(activeFilter);
-      return matchSearch && matchCategory;
-    });
-  }, [searchQuery, activeFilter]);
-
-  const sortedFiltered = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      if (a.id === 'about') return 1;
-      if (b.id === 'about') return -1;
-      return 0;
-    });
-  }, [filtered]);
-
-  const paletteResults = useMemo(() => {
-    return products.filter(p =>
-      p.title.toLowerCase().includes(paletteQuery.toLowerCase()) ||
-      p.desc.toLowerCase().includes(paletteQuery.toLowerCase())
-    );
-  }, [paletteQuery]);
-
-  // --- SPOTLIGHT (Throttled) ---
-  const handleMouseMove = useCallback((e) => {
-    if (!containerRef.current) return;
-    if (rafId.current) cancelAnimationFrame(rafId.current);
-    
-    rafId.current = requestAnimationFrame(() => {
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      containerRef.current.style.setProperty('--spot-x', x + '%');
-      containerRef.current.style.setProperty('--spot-y', y + '%');
-    });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    if (rafId.current) cancelAnimationFrame(rafId.current);
-    if (containerRef.current) {
-      containerRef.current.style.setProperty('--spot-x', '50%');
-      containerRef.current.style.setProperty('--spot-y', '50%');
-    }
-  }, []);
-
-  // --- KEYBOARD & NAVIGATION ---
+  // Keyboard shortcuts
   useEffect(() => {
     const down = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -377,6 +348,69 @@ export default function DamsazDashboard() {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  // Cleanup
+  useEffect(() => () => {
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  // Computed values
+  const coreProducts = useMemo(() => products.filter(p => p.id !== 'about'), []);
+  const total = coreProducts.length;
+  const liveCount = coreProducts.filter(p => p.status === 'Live').length;
+  const betaCount = coreProducts.filter(p => p.status === 'Beta').length;
+  const soonCount = coreProducts.filter(p => p.status === 'Soon').length;
+
+  const filtered = useMemo(() => {
+    return products.filter(p => {
+      const matchSearch = !searchQuery || (
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.fullDesc.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const matchCategory = activeFilter === 'All' || p.categories.includes(activeFilter);
+      return matchSearch && matchCategory;
+    });
+  }, [searchQuery, activeFilter]);
+
+  const sortedFiltered = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      if (a.id === 'about') return 1;
+      if (b.id === 'about') return -1;
+      return 0;
+    });
+  }, [filtered]);
+
+  const paletteResults = useMemo(() => {
+    if (!paletteQuery) return [];
+    return products.filter(p =>
+      p.title.toLowerCase().includes(paletteQuery.toLowerCase()) ||
+      p.desc.toLowerCase().includes(paletteQuery.toLowerCase())
+    );
+  }, [paletteQuery]);
+
+  // Spotlight (throttled with rAF)
+  const handleMouseMove = useCallback((e) => {
+    if (!containerRef.current || reducedMotion) return;
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      containerRef.current.style.setProperty('--spot-x', x + '%');
+      containerRef.current.style.setProperty('--spot-y', y + '%');
+    });
+  }, [reducedMotion]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (containerRef.current) {
+      containerRef.current.style.setProperty('--spot-x', '50%');
+      containerRef.current.style.setProperty('--spot-y', '50%');
+    }
+  }, []);
+
+  // Callbacks
   const toggleExpand = useCallback((id) => {
     setExpandedId(prev => prev === id ? null : id);
   }, []);
@@ -389,30 +423,6 @@ export default function DamsazDashboard() {
     gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-    };
-  }, []);
-
-  // Cleanup toast timeout on unmount
-useEffect(() => {
-  return () => {
-    if (toastTimeoutRef.current) {
-      clearTimeout(toastTimeoutRef.current);
-    }
-  };
-}, []);
-
-
-  // Dynamic update date
-  const updateDate = new Date().toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
-  // --- PALETTE SELECT (resets filters so the card is always visible) ---
   const handlePaletteSelect = useCallback((productId) => {
     setPaletteOpen(false);
     setActiveFilter('All');
@@ -423,15 +433,19 @@ useEffect(() => {
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 100);
+    }, 50);
   }, []);
+
+  const updateDate = new Date().toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  });
 
   return (
     <div className={`min-h-screen w-full flex items-center justify-center overflow-hidden transition-colors duration-500 ${
       presenterMode ? 'bg-slate-900' : theme === 'dark' ? 'bg-slate-950' : 'bg-slate-100'
     }`}>
       
-      {/* GLOBAL TWINKLE CSS */}
+      {/* CSS keyframes */}
       <style>{`
         @keyframes twinkle {
           0%, 100% { opacity: 0.2; transform: scale(0.8); }
@@ -447,7 +461,7 @@ useEffect(() => {
         }
       `}</style>
 
-      {/* TOAST NOTIFICATION */}
+      {/* Toast notification */}
       <AnimatePresence>
         {toast.visible && (
           <motion.div
@@ -462,26 +476,14 @@ useEffect(() => {
         )}
       </AnimatePresence>
 
-      {/* REACT-WAY STAR BACKGROUND */}
+      {/* Star background (memoized stars) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {stars.map(star => (
-          <div 
-            key={star.id} 
-            className={`absolute rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-slate-800'}`}
-            style={{
-              width: star.size,
-              height: star.size,
-              left: star.left,
-              top: star.top,
-              opacity: star.opacity,
-              animation: `twinkle ${star.animationDuration} infinite`,
-              animationDelay: star.animationDelay
-            }}
-          />
+          <Star key={star.id} {...star} theme={theme} />
         ))}
       </div>
 
-      {/* BACKGROUND ORBS */}
+      {/* Background orbs – only if motion is allowed */}
       {!presenterMode && !reducedMotion && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
@@ -508,12 +510,12 @@ useEffect(() => {
         </div>
       )}
 
-      {/* FAINT GRID OVERLAY */}
+      {/* Grid overlay */}
       <div className={`absolute inset-0 pointer-events-none z-0 opacity-5 ${
         theme === 'dark' ? 'bg-[radial-gradient(#ffffff33_1px,transparent_1px)] bg-size-[40px_40px]' : 'bg-[radial-gradient(#00000033_1px,transparent_1px)] bg-size-[40px_40px]'
       }`} />
 
-      {/* MAIN GLASS CONTAINER */}
+      {/* Main glass container */}
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
@@ -527,7 +529,7 @@ useEffect(() => {
           backgroundImage: `radial-gradient(circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255,255,255,0.06) 0%, transparent 50%)`
         }}
       >
-        {/* HEADER */}
+        {/* Header */}
         <header className={`p-8 border-b flex flex-col md:flex-row justify-between items-center gap-6 ${
           theme === 'dark' ? 'border-white/10' : 'border-white/20'
         }`}>
@@ -557,7 +559,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* UTILITIES */}
+          {/* Utilities */}
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative group flex-1 md:w-64">
               <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${
@@ -566,8 +568,8 @@ useEffect(() => {
               <input 
                 type="text" 
                 placeholder="Search products... ⌘K" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                defaultValue=""  // Controlled via ref from handleSearchChange
+                onChange={handleSearchChange}
                 className={`w-full rounded-full py-2 pl-10 pr-4 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   theme === 'dark'
                     ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
@@ -619,7 +621,7 @@ useEffect(() => {
           </div>
         </header>
 
-        {/* HERO BLOCK */}
+        {/* Hero block */}
         <div className={`px-8 py-6 border-b ${theme === 'dark' ? 'border-white/5' : 'border-white/20'}`}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -646,7 +648,6 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* DYNAMIC Latest Update Ticker */}
           <div className={`mt-3 flex items-center gap-2 text-xs ${theme === 'dark' ? 'text-white/40' : 'text-slate-500'}`}>
             <Sparkles size={12} className="text-indigo-400" />
             <span>Latest Update: Little Explorer entered Beta • {updateDate}</span>
@@ -662,29 +663,24 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* CATEGORY FILTER */}
+        {/* Category filter – also clears search on change */}
         <div className="px-8 py-3 flex justify-center gap-2 flex-wrap border-b border-white/5">
           {categories.map(filter => (
             <button
               key={filter}
-              onClick={() => setActiveFilter(filter)}
+              onClick={() => { setActiveFilter(filter); setSearchQuery(''); }}
               className={`px-4 py-1.5 rounded-full text-sm font-medium uppercase transition-all relative focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
                 activeFilter === filter 
-                  ? `text-white` 
+                  ? `text-white bg-indigo-500` 
                   : `bg-transparent ${theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-600 hover:text-slate-800'}`
               }`}
             >
               {filter}
-              {activeFilter === filter && (
-                <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full ${
-                  theme === 'dark' ? 'bg-white' : 'bg-slate-800'
-                }`} />
-              )}
             </button>
           ))}
         </div>
 
-        {/* PRODUCT GRID */}
+        {/* Product grid */}
         <main ref={gridRef} className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-y-auto min-h-100">
           <AnimatePresence mode="wait">
             {sortedFiltered.length > 0 ? (
@@ -707,7 +703,7 @@ useEffect(() => {
           </AnimatePresence>
         </main>
 
-        {/* FOOTER - Updated: YouTube, Facebook, Instagram */}
+        {/* Footer */}
         <footer className={`p-8 border-t text-center ${
           theme === 'dark' ? 'border-white/10' : 'border-white/20'
         }`}>
@@ -745,7 +741,7 @@ useEffect(() => {
         </footer>
       </div>
 
-      {/* COMMAND PALETTE */}
+      {/* Command palette */}
       <AnimatePresence>
         {paletteOpen && (
           <motion.div
