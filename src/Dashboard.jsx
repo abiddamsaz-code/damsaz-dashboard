@@ -30,7 +30,11 @@ const products = [
     fullDesc: 'Centre management software that runs attendance, fees, scheduling, and reporting — so coaching centres spend less time on admin and more on teaching.',
     status: 'Live',
     categories: ['Management'],
+<<<<<<< Updated upstream
     url: 'https://cccportal.damsaz.site/',
+=======
+    url: 'https://cccportal.damsaz.site',
+>>>>>>> Stashed changes
     comingSoon: false,
     stats: { audience: 'For Admins, Teachers & Students of CCC' },
     icon: <Building size={32} />,
