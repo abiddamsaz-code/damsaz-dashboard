@@ -133,10 +133,12 @@ export const ProductCard = memo(({ product, isExpanded, onToggle, theme, present
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     product.comingSoon
                       ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      : product.isDownload
+                      ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
                       : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
                   }`}
                 >
-                  {product.comingSoon ? 'Coming Soon 🚀' : `Visit ${product.title}`}
+                  {product.comingSoon ? 'Coming Soon 🚀' : product.isDownload ? `Download APK 📱` : `Visit ${product.title}`}
                   <ArrowRight size={14} />
                 </button>
               </motion.div>

@@ -45,8 +45,9 @@ export const products = [
     fullDesc: 'A delightful Android learning app for kids and toddlers — interactive cards that teach names of animals, birds, fruits, vegetables, and everyday objects through visual and auditory cues.',
     status: 'Beta',
     categories: ['Education'],
-    url: 'https://littleexplorer.damsaz.site/',
-    comingSoon: true,
+    url: '/little-explorer.apk',
+    comingSoon: false,
+    isDownload: true,
     stats: { audience: 'For Kids & Toddlers' },
     iconName: 'User',
     color: 'from-pink-400 to-rose-500'
