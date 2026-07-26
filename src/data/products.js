@@ -30,10 +30,10 @@ export const products = [
     title: 'SMS',
     desc: 'School Management System – manage students, teachers, and classes.',
     fullDesc: 'A comprehensive school management system covering admissions, attendance, grades, and parent communication.',
-    status: 'Soon',
+    status: 'Live',
     categories: ['Management'],
     url: 'https://sms.damsaz.site/',
-    comingSoon: true,
+    comingSoon: false,
     stats: { audience: 'For Schools & Admins' },
     iconName: 'Users',
     color: 'from-cyan-400 to-sky-500'
