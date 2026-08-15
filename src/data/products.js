@@ -98,7 +98,7 @@ export const products = [
     fullDesc: 'The story of the person building all of this — why an EdTech ecosystem, and why it looks the way it does. From teaching in a small classroom to building digital tools for education.',
     status: 'Live',
     categories: ['Content'],
-    url: 'https://damsaz.site',
+    url: 'https://abid.damsaz.site',
     comingSoon: false,
     stats: { since: 'Since 2024', focus: 'Focus: EdTech & Software' },
     iconName: 'Fingerprint',
