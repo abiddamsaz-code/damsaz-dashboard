@@ -8,6 +8,7 @@ import {
   User,
   PlayCircle,
   Fingerprint,
+  Wallet,
   ChevronDown,
   ArrowRight
 } from 'lucide-react';
@@ -19,6 +20,7 @@ const iconMap = {
   User: <User size={32} />,
   PlayCircle: <PlayCircle size={32} />,
   Fingerprint: <Fingerprint size={32} />,
+  Wallet: <Wallet size={32} />,
 };
 
 export const ProductCard = memo(({ product, isExpanded, onToggle, theme, presenterMode, showToast }) => {

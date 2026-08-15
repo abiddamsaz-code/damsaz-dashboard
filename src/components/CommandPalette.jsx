@@ -8,7 +8,8 @@ import {
   Users,
   User,
   PlayCircle,
-  Fingerprint
+  Fingerprint,
+  Wallet
 } from 'lucide-react';
 
 const iconMap = {
@@ -18,6 +19,7 @@ const iconMap = {
   User: <User size={20} />,
   PlayCircle: <PlayCircle size={20} />,
   Fingerprint: <Fingerprint size={20} />,
+  Wallet: <Wallet size={20} />,
 };
 
 export const CommandPalette = memo(({

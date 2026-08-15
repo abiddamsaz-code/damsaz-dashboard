@@ -53,6 +53,19 @@ export const products = [
     color: 'from-pink-400 to-rose-500'
   },
   {
+    id: 'personal-finance',
+    title: 'Personal Finance Tracker',
+    desc: 'Fast, offline-first personal finance and ledger manager for Android & Web.',
+    fullDesc: 'A modern, colorful, offline-first personal ledger and expense tracker — track cash, bank accounts, personal & business transactions with biometric security and zero accounting hassle.',
+    status: 'Beta',
+    categories: ['Management'],
+    url: '#',
+    comingSoon: true,
+    stats: { audience: 'For Individuals & Business', platform: 'Android (Compose) & Web' },
+    iconName: 'Wallet',
+    color: 'from-purple-400 to-indigo-600'
+  },
+  {
     id: 'tuition-centre',
     title: 'The Conceptual Coaching Centre',
     desc: 'Our physical branch in Sita Road — in-person excellence programs.',
@@ -83,11 +96,11 @@ export const products = [
     title: 'Abid Damsaz Lakhair',
     desc: 'The story and vision behind the ecosystem.',
     fullDesc: 'The story of the person building all of this — why an EdTech ecosystem, and why it looks the way it does. From teaching in a small classroom to building digital tools for education.',
-    status: 'Soon',
+    status: 'Live',
     categories: ['Content'],
     url: 'https://damsaz.site',
-    comingSoon: true,
-    stats: { since: 'Since 2024', focus: 'Focus: EdTech' },
+    comingSoon: false,
+    stats: { since: 'Since 2024', focus: 'Focus: EdTech & Software' },
     iconName: 'Fingerprint',
     color: 'from-purple-400 to-fuchsia-500'
   }
