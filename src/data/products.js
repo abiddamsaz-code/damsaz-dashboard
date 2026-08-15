@@ -54,9 +54,9 @@ export const products = [
   },
   {
     id: 'personal-finance',
-    title: 'Hisaab',
-    desc: 'Hisaab – Fast, 100% offline-first personal finance and ledger manager for Android.',
-    fullDesc: 'Hisaab is a modern, colorful, offline-first personal ledger and expense manager — track cash, bank accounts, personal & business transactions with biometric security and zero accounting hassle.',
+    title: 'HiSaab',
+    desc: 'Personal Finance & Ledger Tracker – Fast, 100% offline-first for Android.',
+    fullDesc: 'HiSaab is a modern, colorful, offline-first personal ledger and expense manager — track cash, bank accounts, personal & business transactions with biometric security and zero accounting hassle.',
     status: 'Beta',
     categories: ['Management'],
     url: '/hisaab.apk',
