@@ -2,11 +2,12 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { products, taglines, categories } from './data/products';
-import { StarBackground } from './components/StarBackground';
+import { ParticleCanvas } from './components/ParticleCanvas';
 import { ProductCard } from './components/ProductCard';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { CommandPalette } from './components/CommandPalette';
+import { isSoundEnabled, setSoundEnabled, playSound } from './utils/sound';
 
 const getInitialTheme = () => {
   const saved = localStorage.getItem('damsaz-theme');
@@ -22,6 +23,7 @@ export default function DamsazDashboard() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState('');
   const [theme, setTheme] = useState(getInitialTheme);
+  const [soundEnabled, setSoundState] = useState(isSoundEnabled);
   const [presenterMode, setPresenterMode] = useState(false);
   const [taglineIndex, setTaglineIndex] = useState(0);
   const [toast, setToast] = useState({ visible: false, message: '' });
@@ -30,6 +32,14 @@ export default function DamsazDashboard() {
   const gridRef = useRef(null);
   const rafId = useRef(null);
   const toastTimeoutRef = useRef(null);
+
+  const toggleSound = useCallback(() => {
+    setSoundState((prev) => {
+      const next = !prev;
+      setSoundEnabled(next);
+      return next;
+    });
+  }, []);
 
   // Show toast notification
   const showToast = useCallback((message) => {
@@ -60,10 +70,12 @@ export default function DamsazDashboard() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setPaletteOpen(true);
+        playSound('open');
       }
       if (e.key === 'Escape') {
         setPaletteOpen(false);
         setExpandedId(null);
+        playSound('close');
       }
     };
     document.addEventListener('keydown', down);
@@ -141,10 +153,18 @@ export default function DamsazDashboard() {
   }, []);
 
   const handleExploreClick = useCallback(() => {
+    playSound('click');
     gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
+  const handleCategoryClick = useCallback((filter) => {
+    playSound('click');
+    setActiveFilter(filter);
+    setSearchQuery('');
+  }, []);
+
   const handlePaletteSelect = useCallback((productId) => {
+    playSound('open');
     setPaletteOpen(false);
     setActiveFilter('All');
     setSearchQuery('');
@@ -166,14 +186,6 @@ export default function DamsazDashboard() {
       presenterMode ? 'bg-slate-900' : theme === 'dark' ? 'bg-slate-950' : 'bg-slate-100'
     }`}>
       
-      {/* CSS keyframes */}
-      <style>{`
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.2; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-      `}</style>
-
       {/* Toast notification */}
       <AnimatePresence>
         {toast.visible && (
@@ -189,10 +201,10 @@ export default function DamsazDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Star background */}
-      <StarBackground theme={theme} />
+      {/* Interactive Cosmic Particle Canvas Background */}
+      <ParticleCanvas theme={theme} />
 
-      {/* Background orbs – only if motion is allowed */}
+      {/* Background glowing orbs */}
       {!presenterMode && !reducedMotion && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
@@ -248,6 +260,8 @@ export default function DamsazDashboard() {
           presenterMode={presenterMode}
           setPresenterMode={setPresenterMode}
           setPaletteOpen={setPaletteOpen}
+          soundEnabled={soundEnabled}
+          toggleSound={toggleSound}
         />
 
         {/* Hero block */}
@@ -279,7 +293,7 @@ export default function DamsazDashboard() {
 
           <div className={`mt-3 flex items-center gap-2 text-xs ${theme === 'dark' ? 'text-white/40' : 'text-slate-500'}`}>
             <Sparkles size={12} className="text-indigo-400" />
-            <span>Latest Update: Little Explorer entered Beta • {updateDate}</span>
+            <span>Latest Update: Personal Finance Tracker entered Beta • {updateDate}</span>
           </div>
 
           <div className="mt-4 flex justify-center md:justify-start">
@@ -292,12 +306,12 @@ export default function DamsazDashboard() {
           </div>
         </div>
 
-        {/* Category filter – clears search input when tab is switched */}
+        {/* Category filter */}
         <div className="px-8 py-3 flex justify-center gap-2 flex-wrap border-b border-white/5">
           {categories.map(filter => (
             <button
               key={filter}
-              onClick={() => { setActiveFilter(filter); setSearchQuery(''); }}
+              onClick={() => handleCategoryClick(filter)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium uppercase transition-all relative focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
                 activeFilter === filter 
                   ? `text-white bg-indigo-500` 

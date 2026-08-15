@@ -1,7 +1,8 @@
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sun, Moon, Monitor } from 'lucide-react';
+import { Search, Sun, Moon, Monitor, Volume2, VolumeX } from 'lucide-react';
 import { taglines } from '../data/products';
+import { playSound } from '../utils/sound';
 
 export const Header = memo(({
   taglineIndex,
@@ -11,7 +12,9 @@ export const Header = memo(({
   toggleTheme,
   presenterMode,
   setPresenterMode,
-  setPaletteOpen
+  setPaletteOpen,
+  soundEnabled,
+  toggleSound
 }) => {
   return (
     <header className={`p-8 border-b flex flex-col md:flex-row justify-between items-center gap-6 ${
@@ -62,9 +65,26 @@ export const Header = memo(({
             aria-label="Search products"
           />
         </div>
-        
+
+        {/* Audio Toggle */}
         <button
-          onClick={toggleTheme}
+          onClick={() => { toggleSound(); playSound('click'); }}
+          className={`p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
+            soundEnabled
+              ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+              : theme === 'dark'
+                ? 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'
+                : 'bg-slate-200/50 text-slate-500 hover:bg-slate-200 hover:text-slate-900'
+          }`}
+          title={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
+          aria-label={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
+        >
+          {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+        </button>
+        
+        {/* Theme Toggle */}
+        <button
+          onClick={() => { toggleTheme(); playSound('click'); }}
           className={`p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
             theme === 'dark' 
               ? 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white' 
@@ -76,8 +96,9 @@ export const Header = memo(({
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
+        {/* Presenter Mode Toggle */}
         <button 
-          onClick={() => setPresenterMode(!presenterMode)}
+          onClick={() => { setPresenterMode(!presenterMode); playSound('click'); }}
           className={`p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
             presenterMode 
               ? 'bg-indigo-500 text-white' 
@@ -91,8 +112,9 @@ export const Header = memo(({
           <Monitor size={20} />
         </button>
 
+        {/* Command Palette Trigger */}
         <button
-          onClick={() => setPaletteOpen(true)}
+          onClick={() => { setPaletteOpen(true); playSound('open'); }}
           className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono border focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
             theme === 'dark'
               ? 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/60'

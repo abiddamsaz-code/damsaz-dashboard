@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ArrowRight
 } from 'lucide-react';
+import { playSound } from '../utils/sound';
 
 const iconMap = {
   BookOpen: <BookOpen size={32} />,
@@ -26,15 +27,21 @@ const iconMap = {
 export const ProductCard = memo(({ product, isExpanded, onToggle, theme, presenterMode, showToast }) => {
   const reducedMotion = useReducedMotion();
 
+  const handleCardClick = useCallback(() => {
+    playSound(isExpanded ? 'close' : 'open');
+    onToggle(product.id);
+  }, [isExpanded, onToggle, product.id]);
+
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onToggle(product.id);
+      handleCardClick();
     }
-  }, [onToggle, product.id]);
+  }, [handleCardClick]);
 
   const handleVisit = useCallback((e) => {
     e.stopPropagation();
+    playSound('click');
     if (product.comingSoon) {
       showToast(`🚀 ${product.title} is coming soon! Stay tuned.`);
     } else {
@@ -65,12 +72,12 @@ export const ProductCard = memo(({ product, isExpanded, onToggle, theme, present
         <div
           role="button"
           tabIndex={0}
-          onClick={() => onToggle(product.id)}
+          onClick={handleCardClick}
           onKeyDown={handleKeyDown}
           aria-expanded={isExpanded}
           className={`h-full relative group cursor-pointer rounded-2xl p-6 transition-all duration-200 ${
             theme === 'dark'
-              ? `bg-white/5 border-white/10 ${isExpanded ? 'bg-white/10 border-indigo-500/30' : 'hover:bg-white/10'}`
+              ? `bg-white/5 border-white/10 ${isExpanded ? 'bg-white/10 border-indigo-500/30 shadow-indigo-500/10' : 'hover:bg-white/10'}`
               : `bg-white/60 border-white/40 ${isExpanded ? 'bg-white/80 border-indigo-400/50 shadow-lg' : 'hover:bg-white/80 hover:shadow-lg'}`
           } border hover:shadow-[0_15px_30px_-10px_rgba(99,102,241,0.3)] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none`}
         >
