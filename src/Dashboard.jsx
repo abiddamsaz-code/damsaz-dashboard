@@ -22,7 +22,7 @@ export default function DamsazDashboard() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [expandedId, setExpandedId] = useState(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(() => typeof window !== 'undefined' && window.location.hash === '#privacy');
   const [paletteQuery, setPaletteQuery] = useState('');
   const [theme, setTheme] = useState(getInitialTheme);
   const [soundEnabled, setSoundState] = useState(isSoundEnabled);
@@ -57,13 +57,6 @@ export default function DamsazDashboard() {
     localStorage.setItem('damsaz-theme', theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
-
-  // Open privacy policy modal if #privacy hash fragment is present
-  useEffect(() => {
-    if (window.location.hash === '#privacy') {
-      setPrivacyOpen(true);
-    }
-  }, []);
 
   // Typewriter tagline switcher
   useEffect(() => {

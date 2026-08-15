@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldCheck, CheckCircle2, Lock, Baby, BookOpen, Building, Mail } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, Lock, Baby, BookOpen, Building } from 'lucide-react';
 import { playSound } from '../utils/sound';
 
 export const PrivacyPolicyModal = memo(({ isOpen, onClose, theme }) => {
