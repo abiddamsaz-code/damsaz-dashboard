@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShieldCheck } from 'lucide-react';
 import { products, taglines, categories } from './data/products';
 import { ParticleCanvas } from './components/ParticleCanvas';
 import { ProductCard } from './components/ProductCard';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { CommandPalette } from './components/CommandPalette';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { isSoundEnabled, setSoundEnabled, playSound } from './utils/sound';
 
 const getInitialTheme = () => {
@@ -21,6 +22,7 @@ export default function DamsazDashboard() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [expandedId, setExpandedId] = useState(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState('');
   const [theme, setTheme] = useState(getInitialTheme);
   const [soundEnabled, setSoundState] = useState(isSoundEnabled);
@@ -56,6 +58,13 @@ export default function DamsazDashboard() {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
+  // Open privacy policy modal if #privacy hash fragment is present
+  useEffect(() => {
+    if (window.location.hash === '#privacy') {
+      setPrivacyOpen(true);
+    }
+  }, []);
+
   // Typewriter tagline switcher
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,6 +83,7 @@ export default function DamsazDashboard() {
       }
       if (e.key === 'Escape') {
         setPaletteOpen(false);
+        setPrivacyOpen(false);
         setExpandedId(null);
         playSound('close');
       }
@@ -262,6 +272,7 @@ export default function DamsazDashboard() {
           setPaletteOpen={setPaletteOpen}
           soundEnabled={soundEnabled}
           toggleSound={toggleSound}
+          onOpenPrivacy={() => setPrivacyOpen(true)}
         />
 
         {/* Hero block */}
@@ -291,9 +302,19 @@ export default function DamsazDashboard() {
             </div>
           </div>
 
-          <div className={`mt-3 flex items-center gap-2 text-xs ${theme === 'dark' ? 'text-white/40' : 'text-slate-500'}`}>
-            <Sparkles size={12} className="text-indigo-400" />
-            <span>Latest Update: Personal Finance Tracker entered Beta • {updateDate}</span>
+          <div className={`mt-3 flex items-center justify-between gap-2 text-xs flex-wrap ${theme === 'dark' ? 'text-white/40' : 'text-slate-500'}`}>
+            <div className="flex items-center gap-2">
+              <Sparkles size={12} className="text-indigo-400" />
+              <span>Latest Update: HiSaab & Little Explorer APKs Updated • {updateDate}</span>
+            </div>
+
+            <button
+              onClick={() => { playSound('click'); setPrivacyOpen(true); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono text-[11px] hover:bg-emerald-500/20 transition-colors"
+            >
+              <ShieldCheck size={12} />
+              Google Play Privacy Policy 🛡️
+            </button>
           </div>
 
           <div className="mt-4 flex justify-center md:justify-start">
@@ -347,7 +368,7 @@ export default function DamsazDashboard() {
         </main>
 
         {/* Footer */}
-        <Footer theme={theme} />
+        <Footer theme={theme} onOpenPrivacy={() => setPrivacyOpen(true)} />
       </div>
 
       {/* Command palette */}
@@ -358,6 +379,13 @@ export default function DamsazDashboard() {
         setPaletteQuery={setPaletteQuery}
         paletteResults={paletteResults}
         onSelectProduct={handlePaletteSelect}
+        theme={theme}
+      />
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicyModal
+        isOpen={privacyOpen}
+        onClose={() => setPrivacyOpen(false)}
         theme={theme}
       />
     </div>

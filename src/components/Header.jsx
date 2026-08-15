@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sun, Moon, Monitor, Volume2, VolumeX } from 'lucide-react';
+import { Search, Sun, Moon, Monitor, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
 import { taglines } from '../data/products';
 import { playSound } from '../utils/sound';
 
@@ -14,7 +14,8 @@ export const Header = memo(({
   setPresenterMode,
   setPaletteOpen,
   soundEnabled,
-  toggleSound
+  toggleSound,
+  onOpenPrivacy
 }) => {
   return (
     <header className={`p-8 border-b flex flex-col md:flex-row justify-between items-center gap-6 ${
@@ -65,6 +66,20 @@ export const Header = memo(({
             aria-label="Search products"
           />
         </div>
+
+        {/* Privacy Policy Trigger */}
+        <button
+          onClick={() => { playSound('click'); onOpenPrivacy(); }}
+          className={`p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
+            theme === 'dark' 
+              ? 'bg-white/5 text-emerald-400 hover:bg-white/10' 
+              : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+          }`}
+          title="Privacy Policy"
+          aria-label="Privacy Policy"
+        >
+          <ShieldCheck size={20} />
+        </button>
 
         {/* Audio Toggle */}
         <button

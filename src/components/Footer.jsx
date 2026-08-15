@@ -1,7 +1,8 @@
 import { memo } from 'react';
-import { Youtube, Facebook, Instagram } from 'lucide-react';
+import { Youtube, Facebook, Instagram, ShieldCheck } from 'lucide-react';
+import { playSound } from '../utils/sound';
 
-export const Footer = memo(({ theme }) => {
+export const Footer = memo(({ theme, onOpenPrivacy }) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -11,7 +12,9 @@ export const Footer = memo(({ theme }) => {
       <p className={`text-sm ${theme === 'dark' ? 'text-white/40' : 'text-slate-500'}`}>
         &copy; {currentYear} Damsaz Technologies — All Rights Reserved
       </p>
-      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-white/60' : 'text-slate-400'}`}>
+      <div className={`text-xs mt-2 flex flex-wrap items-center justify-center gap-4 ${
+        theme === 'dark' ? 'text-white/60' : 'text-slate-400'
+      }`}>
         <a 
           href="mailto:info@damsaz.site" 
           className="underline hover:text-indigo-400 transition-colors"
@@ -19,7 +22,31 @@ export const Footer = memo(({ theme }) => {
         >
           info@damsaz.site
         </a>
-      </p>
+
+        <span>•</span>
+
+        <button
+          onClick={() => { playSound('click'); onOpenPrivacy(); }}
+          className="inline-flex items-center gap-1 hover:text-indigo-400 transition-colors underline"
+          title="Open Privacy Policy Modal"
+        >
+          <ShieldCheck size={14} className="text-emerald-400" />
+          Privacy Policy
+        </button>
+
+        <span>•</span>
+
+        <a
+          href="/privacy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-indigo-400 transition-colors font-mono"
+          title="Google Play Privacy Policy Page"
+        >
+          privacy.html ↗
+        </a>
+      </div>
+
       <div className="flex justify-center gap-6 mt-4">
         <a 
           href="https://www.youtube.com/@LetsDecodeWithAbii" 
