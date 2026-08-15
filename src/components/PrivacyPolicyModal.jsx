@@ -7,7 +7,7 @@ export const PrivacyPolicyModal = memo(({ isOpen, onClose, theme }) => {
   const [activeTab, setActiveTab] = useState('hisaab');
 
   const tabs = [
-    { id: 'hisaab', label: '💳 HiSaab (Finance)', icon: Lock },
+    { id: 'hisaab', label: '💳 Hisaab (Finance)', icon: Lock },
     { id: 'little-explorer', label: '🐥 Little Explorer (Kids)', icon: Baby },
     { id: 'mind-forge', label: '📚 Mind Forge', icon: BookOpen },
     { id: 'ccms', label: '🏢 CCMS & SMS', icon: Building },
@@ -100,7 +100,7 @@ export const PrivacyPolicyModal = memo(({ isOpen, onClose, theme }) => {
               {activeTab === 'hisaab' && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-purple-400 font-bold text-base">
-                    <span>💳</span> HiSaab – Personal Finance Tracker
+                    <span>💳</span> Hisaab – Personal Finance Tracker
                   </div>
                   <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono">
                     ✓ 100% Offline-First Financial Ledger • Zero Unrequested Cloud Transmission
