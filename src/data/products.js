@@ -45,26 +45,26 @@ export const products = [
     fullDesc: 'A delightful Android learning app for kids and toddlers — interactive cards that teach names of animals, birds, fruits, vegetables, and everyday objects through visual and auditory cues.',
     status: 'Beta',
     categories: ['Education'],
-    url: '/little-explorer.apk',
+    url: '#',
+    apkUrl: '/little-explorer.apk',
     comingSoon: false,
-    isDownload: true,
     stats: { audience: 'For Kids & Toddlers' },
     iconName: 'User',
     color: 'from-pink-400 to-rose-500'
   },
   {
     id: 'personal-finance',
-    title: 'HiSaab',
-    desc: 'Personal Finance & Ledger Tracker – Fast, 100% offline-first for Android.',
-    fullDesc: 'HiSaab is a modern, colorful, offline-first personal ledger and expense manager — track cash, bank accounts, personal & business transactions with biometric security and zero accounting hassle.',
-    status: 'Beta',
-    categories: ['Management'],
-    url: '/hisaab.apk',
+    title: 'Hisaab',
+    desc: '100% Offline Personal & Business Finance Tracker with Rupee ledger and biometric lock.',
+    fullDesc: 'Hisaab is a modern, 100% offline-first personal & business ledger and expense manager — log expenses in 2 seconds, track Cash and Bank accounts, split Personal vs Business ledgers with biometric fingerprint security, sub-unit Rupee precision, and optional cloud sync.',
+    status: 'Live',
+    categories: ['Finance', 'Management'],
+    url: 'https://hisaab.damsaz.site/',
+    apkUrl: '/hisaab.apk',
     comingSoon: false,
-    isDownload: true,
-    stats: { audience: 'For Individuals & Business', platform: 'Android APK' },
+    stats: { audience: 'For Individuals & Businesses', platform: 'Android & Web' },
     iconName: 'Wallet',
-    color: 'from-purple-400 to-indigo-600'
+    color: 'from-emerald-400 to-teal-600'
   },
   {
     id: 'tuition-centre',
@@ -116,4 +116,4 @@ export const taglines = [
   "Empowering Students • Supporting Teachers"
 ];
 
-export const categories = ['All', 'Education', 'Management', 'Content'];
+export const categories = ['All', 'Education', 'Management', 'Finance', 'Content'];

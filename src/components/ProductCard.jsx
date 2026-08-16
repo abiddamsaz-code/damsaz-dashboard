@@ -10,7 +10,8 @@ import {
   Fingerprint,
   Wallet,
   ChevronDown,
-  ArrowRight
+  ArrowRight,
+  Download
 } from 'lucide-react';
 import { playSound } from '../utils/sound';
 
@@ -44,10 +45,18 @@ export const ProductCard = memo(({ product, isExpanded, onToggle, theme, present
     playSound('click');
     if (product.comingSoon) {
       showToast(`🚀 ${product.title} is coming soon! Stay tuned.`);
-    } else {
+    } else if (product.url && product.url !== '#') {
       window.open(product.url, '_blank', 'noopener,noreferrer');
     }
   }, [product, showToast]);
+
+  const handleDownload = useCallback((e) => {
+    e.stopPropagation();
+    playSound('click');
+    if (product.apkUrl) {
+      window.open(product.apkUrl, '_blank', 'noopener,noreferrer');
+    }
+  }, [product]);
 
   const iconComponent = iconMap[product.iconName] || <BookOpen size={32} />;
 
@@ -135,21 +144,37 @@ export const ProductCard = memo(({ product, isExpanded, onToggle, theme, present
                 animate={{ maxHeight: 300, opacity: 1 }}
                 exit={{ maxHeight: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="mt-4 pt-4 border-t border-white/10"
+                className="mt-4 pt-4 border-t border-white/10 flex flex-wrap gap-3"
               >
-                <button
-                  onClick={handleVisit}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    product.comingSoon
-                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                      : product.isDownload
-                      ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
-                      : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
-                  }`}
-                >
-                  {product.comingSoon ? 'Coming Soon 🚀' : product.isDownload ? `Download APK 📱` : `Visit ${product.title}`}
-                  <ArrowRight size={14} />
-                </button>
+                {product.comingSoon ? (
+                  <button
+                    onClick={handleVisit}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+                  >
+                    <span>Coming Soon 🚀</span>
+                  </button>
+                ) : (
+                  <>
+                    {product.url && product.url !== '#' && (
+                      <button
+                        onClick={handleVisit}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30"
+                      >
+                        <span>Visit {product.title} 🌐</span>
+                        <ArrowRight size={14} />
+                      </button>
+                    )}
+                    {product.apkUrl && (
+                      <button
+                        onClick={handleDownload}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                      >
+                        <span>Download Android APK 📱</span>
+                        <Download size={14} />
+                      </button>
+                    )}
+                  </>
+                )}
               </motion.div>
             </div>
           )}
